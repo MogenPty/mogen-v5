@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mogen — Web Development, Mobile Apps & Business Registration</title>
+    <meta
+      name="description"
+      content="Mogen registers your company with CIPC and builds the website or app that brings it customers. One team, one quote — web development, mobile apps and business registration in South Africa."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+      }
+      html.light,
+      html.light body {
+        background-color: #f1f2ec;
+        color: #14201a;
+      }
+      html.dark,
+      html.dark body {
+        background-color: #0c1310;
+        color: #e9eee6;
+      }
+    </style>
+    <script>
+      // Resolve the visitor's color mode before React paints (default: system).
+      (function () {
+        var stored = "system";
+        try {
+          stored = localStorage.getItem("mogen-theme") || "system";
+        } catch (e) {}
+        if (["light", "dark", "system"].indexOf(stored) === -1) stored = "system";
+        var resolved =
+          stored === "system"
+            ? window.matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light"
+            : stored;
+        document.documentElement.classList.remove("light", "dark");
+        document.documentElement.classList.add(resolved);
+        document.documentElement.setAttribute("data-theme", resolved);
+        // Keep the iframe sandbox host in sync, as before.
+        if (window.self !== window.top) {
+          window.addEventListener("message", function (event) {
+            if (event.data && typeof event.data.theme === "string") {
+              var theme = event.data.theme;
+              if (theme === "light" || theme === "dark") {
+                document.documentElement.classList.remove("light", "dark");
+                document.documentElement.classList.add(theme);
+                document.documentElement.setAttribute("data-theme", theme);
+              }
+            }
+          });
+        }
+      })();
+    </script>
+    <script>
+      (function () {
+        if (window.self === window.top) return;
+        var reported = {};
+        window.addEventListener("error", function (event) {
+          if (!event || !event.message) return;
+          var key =
+            event.message + "|" + (event.filename || "") + "|" + (event.lineno || 0);
+          if (reported[key]) return;
+          reported[key] = true;
+          try {
+            window.parent.postMessage(
+              {
+                type: "sandbox-runtime-error",
+                payload: {
+                  message: String(event.message).slice(0, 500),
+                  filename: String(event.filename || ""),
+                  lineno: event.lineno || 0,
+                  colno: event.colno || 0,
+                  stack:
+                    event.error && event.error.stack
+                      ? String(event.error.stack).slice(0, 2000)
+                      : ""
+                }
+              },
+              "*"
+            );
+          } catch (e) {}
+        });
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
